@@ -1,0 +1,32 @@
+version: "2"
+
+services:
+  back:
+    container_name: ws
+    build: .
+    command:  >
+      bash -c "cd /app &&
+      yarn install && 
+      ts-node ./node_modules/.bin/typeorm migration:run && 
+      yarn run start"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+    depends_on:
+      - pgdb
+    restart: always
+  pgdb:
+    container_name: ws_db
+    image: postgres:10.6
+    volumes:
+      - ./:/app
+      - pg-data:/var/lib/postgresql/
+    environment:
+      POSTGRES_USER: ws_user
+      POSTGRES_PASSWORD: ws_password
+      POSTGRES_DB: writeservice
+    restart: always
+
+volumes:
+  pg-data:
