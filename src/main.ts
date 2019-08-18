@@ -6,10 +6,13 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const PORT = process.env.PORT || 3000;
+  const HOSTNAME = process.env.HOSTNAME || '127.0.0.1';
+  const PREFIX_URL = process.env.PREFIX_URL || 'api/v1';
 
   app.use(helmet());
   app.enableCors();
-  app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix(PREFIX_URL);
   app.useGlobalPipes(new ValidationPipe());
 
   const options = new DocumentBuilder()
@@ -20,6 +23,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger', app, document);
 
-  await app.listen(3000);
+  await app.listen(PORT, HOSTNAME);
 }
 bootstrap();
