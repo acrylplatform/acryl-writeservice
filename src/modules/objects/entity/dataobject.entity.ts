@@ -12,6 +12,9 @@ export class DataObject {
   rawData: string;
 
   @Column({nullable: true})
+  prevHash: string;
+
+  @Column({nullable: true})
   txHash: string;
 
   @Column({ nullable: true, type: 'timestamp with time zone' })

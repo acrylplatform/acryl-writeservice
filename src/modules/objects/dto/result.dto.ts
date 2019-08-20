@@ -11,6 +11,9 @@ export class DataResultDto {
   @ApiModelProperty()
   readonly txHash: string;
 
+  @ApiModelProperty({nullable: true})
+  readonly txDate?: Date;
+
   @ApiModelProperty()
   readonly createdAt: string;
 }
