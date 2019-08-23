@@ -1,4 +1,4 @@
-console.log(__dirname);
+// console.log(__dirname);
 const env = require('dotenv');
 env.config();
 

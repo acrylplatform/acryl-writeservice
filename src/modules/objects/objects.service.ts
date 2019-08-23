@@ -21,31 +21,49 @@ export class ObjectsService {
   ) {}
 
   async create(idFromUser: string, rawData: string): Promise<DataResultDto> {
+    const isSending = this.configService.get('IS_SENDING');
+    const prevHash = await this.lastHash();
     const obj = await this.objectRepository.create({
       idFromUser,
-      rawData,
+      rawData: JSON.parse(rawData),
+      prevHash,
     });
-    const object = await this.objectRepository.save(obj);
-    const tx = await this.sendTx(rawData);
+    let object = await this.objectRepository.save(obj);
+    let tx = null;
 
-    return {
-      writeData: object.writeData,
-      idFromUser,
-      txHash: tx.id,
-      // txDate: txDate.toDate(),
-      createdAt: object.createdAt,
-      // ...tx,
-    };
+    if (isSending) {
+      tx = await this.sendTx(object);
+      object = await this.update(object, tx);
+    }
+
+    return isSending
+      ? {
+          writeData: object.writeData,
+          idFromUser,
+          prevHash,
+          txHash: tx.id,
+          txDate: object.txDate,
+          createdAt: object.createdAt,
+        }
+      : {
+          idFromUser,
+          prevHash,
+          createdAt: object.createdAt,
+        };
   }
 
-  async sendTx(rawData: string) {
+  async sendTx(object: any) {
     const nodeUrl = this.configService.get('NODE_URL');
     const seed = this.configService.get('SEED');
     const dataParams: IDataParams = {
       data: [
         {
-          key: 'userData',
-          value: JSON.stringify(rawData),
+          key: 'data',
+          value: JSON.stringify(object.rawData),
+        },
+        {
+          key: 'previousId',
+          value: object.prevHash,
         },
       ],
     };
@@ -61,6 +79,17 @@ export class ObjectsService {
     obj.txDate = txDate.toDate();
     obj.txStatus = true;
     obj.txHash = tx.id;
-    const object = await this.objectRepository.save(obj);
+
+    return await this.objectRepository.save(obj);
+  }
+
+  async lastHash() {
+    const object = await this.objectRepository.findOne({
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    return object.txHash || null;
   }
 }

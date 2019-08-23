@@ -6,13 +6,16 @@ export class DataResultDto {
   readonly idFromUser: string;
 
   @ApiModelProperty()
-  readonly writeData: string;
+  readonly writeData?: object;
 
   @ApiModelProperty()
-  readonly txHash: string;
+  readonly txHash?: string;
 
   @ApiModelProperty({nullable: true})
-  readonly txDate?: Date;
+  readonly txDate?: string;
+
+  @ApiModelProperty()
+  readonly prevHash: string;
 
   @ApiModelProperty()
   readonly createdAt: string;
