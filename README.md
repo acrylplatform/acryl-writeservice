@@ -18,4 +18,4 @@ http://127.0.0.1:3000/swagger/#/
 
 ## API 
 
-Host api: http://127.0.0.1:3000/api/v1
+The API will be launched at: http://127.0.0.1:3000/api/v1
