@@ -92,4 +92,12 @@ export class ObjectsService {
 
     return object.txHash || null;
   }
+
+  async findByUserId(idFromUser: string) {
+    return await this.objectRepository.findOne({
+      where: {
+        idFromUser,
+      },
+    });
+  }
 }
